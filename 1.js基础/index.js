@@ -1,12 +1,9 @@
-var value = 1;
+var arr = [{ old: 'old' }, ['old']];
 
-function foo() {
-    console.log(this, this.value);
-}
+var new_arr = arr.slice();
 
-function bar() {
-    var value = 2;
-    foo.call(this)
-}
+arr[0].old = 'new';
+arr[1][0] = 'new';
 
-bar()
+console.log(arr) // [{old: 'new'}, ['new']]
+console.log(new_arr) // [{old: 'new'}, ['new']]
