@@ -1,110 +1,13 @@
-const PubSub = {}
-/* 
-  {
-    add: {
-      token1: callback1, 
-      token2: callback2
-    },
-    update: {
-      token3: callback3
-    }
-  }
-*/
-let callbacksObj = {} // 保存所有回调的容器
-let id = 0 // 用于生成token的标记
 
-/**
- * 订阅消息
- */
-PubSub.subscribe = function(msgName, callback) {
-  const token = 'token_' + ++id
-  const callbacks = callbacksObj[msgName]
-  if (!callbacks) {
-    callbacksObj[msgName] = { [token]: callback }
-  } else {
-    callbacks[token] = callback
-  }
-  return token
-}
-
-/**
- * 发布异步的消息
- */
-PubSub.publish = function(msgName, data) {
-  let callbacks = callbacksObj[msgName]
-  if (callbacks) {
-    // callbacks = Object.assign({}, callbacks)
-    setTimeout(() => {
-      Object.values(callbacks).forEach(callback => {
-        callback(data)
-      })
-    }, 0)
-  }
-}
-
-/**
- * 发布同步的消息
- */
-PubSub.publishSync = function(msgName, data) {
-  const callbacks = callbacksObj[msgName]
-  if (callbacks) {
-    Object.values(callbacks).forEach(callback => {
-      callback(data)
-    })
-  }
-}
-
-/**
- * 取消消息订阅
- * 1). 没有传值, flag为undefined
- * 2). 传入token字符串
- * 3). msgName字符串
- */
-PubSub.unsubscribe = function(flag) {
-  if (flag === undefined) {
-    callbacksObj = {}
-  } else if (typeof flag === 'string') {
-    if (flag.indexOf('token_') === 0) { // flag是token,只用删除子级
-      const callbacks = Object.values(callbacksObj).find(callbacks => callbacks.hasOwnProperty(flag))
-      if (callbacks) delete callbacks[flag];
-    } else { // flag是msgName,一整个对象都删掉
-      delete callbacksObj[flag]
-    }
-  } else {
-    throw new Error('如果传入参数, 必须是字符串类型')
-  }
-}
+const a = ['john-reese', 'harold-finch', 'sameen-shaw'];
 
 
+const b = a.reduce((pre, item) => {
+  pre.push({
+    name: item.split('-').join(' ')
+  })
+  return pre;
+}, []);
 
-
-PubSub.subscribe('add', (data) => {
-  console.log('add()...', data)
-})
-PubSub.subscribe('add', (data) => {
-  console.log('add2()...', data)
-})
-const token = PubSub.subscribe('add', (data) => {
-  console.log('add3()...', data)
-})
-PubSub.subscribe('update', (data) => {
-  console.log('update()...', data)
-})
-
-// PubSub.unsubscribe(token)
-// PubSub.unsubscribe('add')
-// PubSub.unsubscribe()
-
-PubSub.publish('add', 12)
-// PubSub.publish('update', 13)
-PubSub.publishSync('update', 12)
-
-
-
-
-
-
-
-
-
+console.log(b);
 
